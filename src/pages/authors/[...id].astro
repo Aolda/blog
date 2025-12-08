@@ -21,13 +21,13 @@ const authorPosts = await getPostsByAuthor(author.id)
 <Layout class="max-w-3xl">
   <PageHead
     slot="head"
-    title={`${author.data.name} (Author)`}
-    description={author.data.bio || `Profile of ${author.data.name}.`}
+    title={`${author.data.name}`}
+    description={author.data.bio || `${author.data.name} 프로필`}
     noindex
   />
   <Breadcrumbs
     items={[
-      { href: '/authors', label: 'Authors', icon: 'lucide:users' },
+      { href: '/authors', label: '구성원', icon: 'lucide:users' },
       { label: author.data.name, icon: 'lucide:user' },
     ]}
   />
@@ -36,7 +36,7 @@ const authorPosts = await getPostsByAuthor(author.id)
     <AuthorCard author={author} />
   </section>
   <section class="flex flex-col gap-y-4">
-    <h2 class="text-2xl font-medium">Posts by {author.data.name}</h2>
+    <h2 class="text-2xl font-medium">{author.data.name}의 작성글</h2>
     {
       authorPosts.length > 0 ? (
         <ul class="flex flex-col gap-4">
@@ -49,9 +49,7 @@ const authorPosts = await getPostsByAuthor(author.id)
             ))}
         </ul>
       ) : (
-        <p class="text-muted-foreground">
-          No posts available from this author.
-        </p>
+        <p class="text-muted-foreground">작성글이 없습니다.</p>
       )
     }
   </section>
