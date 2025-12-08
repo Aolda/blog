@@ -6,37 +6,37 @@ export const SITE: Site = {
   href: 'https://blog.aoldacloud.com',
   author: 'aolda',
   locale: 'ko-KR',
-  featuredPostCount: 2,
-  postsPerPage: 3,
+  featuredPostCount: 3,
+  postsPerPage: 5,
 }
 
 export const NAV_LINKS: SocialLink[] = [
   {
     href: '/blog',
-    label: 'blog',
+    label: '블로깅',
   },
   {
     href: '/authors',
-    label: 'authors',
+    label: '구성원',
   },
   {
     href: '/about',
-    label: 'about',
+    label: '아올다',
   },
 ]
 
 export const SOCIAL_LINKS: SocialLink[] = [
   {
-    href: 'https://github.com/jktrn',
-    label: 'GitHub',
+    href: 'https://git.ajou.ac.kr/aolda',
+    label: 'GitLab',
   },
   {
-    href: 'https://twitter.com/enscry',
-    label: 'Twitter',
-  },
-  {
-    href: 'mailto:jason@enscribe.dev',
+    href: 'mailto:ajou.aolda@gmail.com',
     label: 'Email',
+  },
+  {
+    href: 'https://www.linkedin.com/company/aolda-cloud',
+    label: 'LinkedIn',
   },
   {
     href: '/rss.xml',
@@ -47,6 +47,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
 export const ICON_MAP: IconMap = {
   Website: 'lucide:globe',
   GitHub: 'lucide:github',
+  GitLab: 'lucide:gitlab',
   LinkedIn: 'lucide:linkedin',
   Twitter: 'lucide:twitter',
   Email: 'lucide:mail',
