@@ -1,3 +1,4 @@
+import path from 'path'
 import { defineConfig } from 'astro/config'
 
 import mdx from '@astrojs/mdx'
@@ -17,6 +18,8 @@ import { pluginCollapsibleSections } from '@expressive-code/plugin-collapsible-s
 import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers'
 
 import tailwindcss from '@tailwindcss/vite'
+
+const __dirname = import.meta.dirname
 
 export default defineConfig({
   site: 'https://blog.aoldacloud.com',
@@ -70,6 +73,11 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+      },
+    },
   },
   server: {
     port: 1234,
