@@ -1,9 +1,5 @@
 import * as React from 'react'
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  MoreHorizontalIcon,
-} from 'lucide-react'
+import { ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -20,17 +16,8 @@ function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {
   )
 }
 
-function PaginationContent({
-  className,
-  ...props
-}: React.ComponentProps<'ul'>) {
-  return (
-    <ul
-      data-slot="pagination-content"
-      className={cn('flex flex-row items-center gap-1', className)}
-      {...props}
-    />
-  )
+function PaginationContent({ className, ...props }: React.ComponentProps<'ul'>) {
+  return <ul data-slot="pagination-content" className={cn('flex flex-row items-center gap-1', className)} {...props} />
 }
 
 function PaginationItem({ ...props }: React.ComponentProps<'li'>) {
@@ -43,13 +30,7 @@ type PaginationLinkProps = {
 } & Pick<React.ComponentProps<typeof Button>, 'size'> &
   React.ComponentProps<'a'>
 
-function PaginationLink({
-  className,
-  isActive,
-  isDisabled,
-  size = 'icon',
-  ...props
-}: PaginationLinkProps) {
+function PaginationLink({ className, isActive, isDisabled, size = 'icon', ...props }: PaginationLinkProps) {
   return (
     <a
       aria-current={isActive ? 'page' : undefined}
@@ -69,11 +50,7 @@ function PaginationLink({
   )
 }
 
-function PaginationPrevious({
-  className,
-  isDisabled,
-  ...props
-}: React.ComponentProps<typeof PaginationLink>) {
+function PaginationPrevious({ className, isDisabled, ...props }: React.ComponentProps<typeof PaginationLink>) {
   return (
     <PaginationLink
       aria-label="Go to previous page"
@@ -83,16 +60,12 @@ function PaginationPrevious({
       {...props}
     >
       <ChevronLeftIcon />
-      <span className="hidden sm:block">Previous</span>
+      <span className="hidden sm:block">이전</span>
     </PaginationLink>
   )
 }
 
-function PaginationNext({
-  className,
-  isDisabled,
-  ...props
-}: React.ComponentProps<typeof PaginationLink>) {
+function PaginationNext({ className, isDisabled, ...props }: React.ComponentProps<typeof PaginationLink>) {
   return (
     <PaginationLink
       aria-label="Go to next page"
@@ -101,16 +74,13 @@ function PaginationNext({
       isDisabled={isDisabled}
       {...props}
     >
-      <span className="hidden sm:block">Next</span>
+      <span className="hidden sm:block">다음</span>
       <ChevronRightIcon />
     </PaginationLink>
   )
 }
 
-function PaginationEllipsis({
-  className,
-  ...props
-}: React.ComponentProps<'span'>) {
+function PaginationEllipsis({ className, ...props }: React.ComponentProps<'span'>) {
   return (
     <span
       aria-hidden
@@ -119,22 +89,34 @@ function PaginationEllipsis({
       {...props}
     >
       <MoreHorizontalIcon className="size-4" />
-      <span className="sr-only">More pages</span>
+      <span className="sr-only">더보기</span>
     </span>
   )
 }
 
-const PaginationComponent: React.FC<PaginationProps> = ({
-  currentPage,
-  totalPages,
-  baseUrl,
-}) => {
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
+const PaginationComponent: React.FC<PaginationProps> = ({ currentPage, totalPages, baseUrl }) => {
+  const getVisiblePages = (currentPage: number, totalPages: number): (number | 'ellipsis')[] => {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1)
+    }
+
+    if (currentPage <= 4) {
+      return [1, 2, 3, 4, 5, 'ellipsis', totalPages]
+    }
+
+    if (currentPage >= totalPages - 3) {
+      return [1, 'ellipsis', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages]
+    }
+
+    return [1, 'ellipsis', currentPage - 1, currentPage, currentPage + 1, 'ellipsis', totalPages]
+  }
 
   const getPageUrl = (page: number) => {
     if (page === 1) return baseUrl
     return `${baseUrl}${page}`
   }
+
+  const visiblePages = getVisiblePages(currentPage, totalPages)
 
   return (
     <Pagination>
@@ -146,28 +128,27 @@ const PaginationComponent: React.FC<PaginationProps> = ({
           />
         </PaginationItem>
 
-        {pages.map((page) => (
-          <PaginationItem key={page}>
-            <PaginationLink
-              href={getPageUrl(page)}
-              isActive={page === currentPage}
-            >
-              {page}
-            </PaginationLink>
-          </PaginationItem>
-        ))}
+        {visiblePages.map((page, index) => {
+          if (page === 'ellipsis') {
+            return (
+              <PaginationItem key={`ellipsis-${index}`}>
+                <PaginationEllipsis />
+              </PaginationItem>
+            )
+          }
 
-        {totalPages > 5 && (
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-        )}
+          return (
+            <PaginationItem key={page}>
+              <PaginationLink href={getPageUrl(page)} isActive={page === currentPage}>
+                {page}
+              </PaginationLink>
+            </PaginationItem>
+          )
+        })}
 
         <PaginationItem>
           <PaginationNext
-            href={
-              currentPage < totalPages ? getPageUrl(currentPage + 1) : undefined
-            }
+            href={currentPage < totalPages ? getPageUrl(currentPage + 1) : undefined}
             isDisabled={currentPage === totalPages}
           />
         </PaginationItem>
