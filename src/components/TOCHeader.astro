@@ -43,10 +43,7 @@ const { headings } = Astro.props
                 />
               </svg>
             </div>
-            <span
-              id="mobile-toc-current-section"
-              class="text-muted-foreground flex-grow truncate text-sm"
-            >
+            <span id="mobile-toc-current-section" class="text-muted-foreground grow truncate text-sm">
               Overview
             </span>
             <span class="text-muted-foreground ml-2">
@@ -58,24 +55,11 @@ const { headings } = Astro.props
           </div>
         </summary>
 
-        <ScrollArea
-          client:load
-          className="mx-auto max-w-3xl"
-          data-toc-header-scroll
-        >
+        <ScrollArea client:load className="mx-auto max-w-3xl" data-toc-header-scroll>
           <div class="max-h-[30vh]">
-            <ul
-              class="flex list-none flex-col gap-y-2 px-4 pb-4"
-              id="mobile-table-of-contents"
-            >
+            <ul class="flex list-none flex-col gap-y-2 px-4 pb-4" id="mobile-table-of-contents">
               {headings.map((heading) => (
-                <li
-                  class={cn(
-                    'px-4 text-sm',
-                    getHeadingMargin(heading.depth),
-                    'text-foreground/60',
-                  )}
-                >
+                <li class={cn('px-4 text-sm', getHeadingMargin(heading.depth), 'text-foreground/60')}>
                   <a
                     href={`#${heading.slug}`}
                     class="mobile-toc-item underline decoration-transparent underline-offset-[3px] transition-colors duration-200 hover:decoration-inherit"
@@ -110,28 +94,19 @@ const { headings } = Astro.props
     activeIds: string[] = []
 
     reset() {
-      this.progressCircle = document.getElementById(
-        'mobile-toc-progress-circle',
-      )
-      this.currentSectionText = document.getElementById(
-        'mobile-toc-current-section',
-      )
-      this.detailsElement = document.querySelector(
-        '#mobile-toc-container details',
-      )
+      this.progressCircle = document.getElementById('mobile-toc-progress-circle')
+      this.currentSectionText = document.getElementById('mobile-toc-current-section')
+      this.detailsElement = document.querySelector('#mobile-toc-container details')
       this.listElement = document.getElementById('mobile-table-of-contents')
       const tocContainer = document.getElementById('mobile-toc-container')
-      this.scrollArea =
-        tocContainer?.querySelector('[data-radix-scroll-area-viewport]') || null
+      this.scrollArea = tocContainer?.querySelector('[data-radix-scroll-area-viewport]') || null
       this.headings = []
       this.regions = []
       this.activeIds = []
 
       if (this.progressCircle) {
-        this.progressCircle.style.strokeDasharray =
-          PROGRESS_CIRCLE_CIRCUMFERENCE.toString()
-        this.progressCircle.style.strokeDashoffset =
-          PROGRESS_CIRCLE_CIRCUMFERENCE.toString()
+        this.progressCircle.style.strokeDasharray = PROGRESS_CIRCLE_CIRCUMFERENCE.toString()
+        this.progressCircle.style.strokeDashoffset = PROGRESS_CIRCLE_CIRCUMFERENCE.toString()
       }
     }
   }
@@ -141,9 +116,7 @@ const { headings } = Astro.props
   class HeadingRegions {
     static build() {
       state.headings = Array.from(
-        document.querySelectorAll<HTMLElement>(
-          '.prose h2, .prose h3, .prose h4, .prose h5, .prose h6',
-        ),
+        document.querySelectorAll<HTMLElement>('.prose h2, .prose h3, .prose h4, .prose h5, .prose h6'),
       )
 
       if (state.headings.length === 0) {
@@ -185,10 +158,7 @@ const { headings } = Astro.props
           const heading = document.getElementById(region.id)
           if (heading) {
             const headingBottom = heading.offsetTop + heading.offsetHeight
-            if (
-              region.end > headingBottom &&
-              (headingBottom < viewportBottom || viewportTop < region.end)
-            ) {
+            if (region.end > headingBottom && (headingBottom < viewportBottom || viewportTop < region.end)) {
               visibleIds.add(region.id)
             }
           }
@@ -241,9 +211,7 @@ const { headings } = Astro.props
 
       if (headingIds.length > 0) {
         const activeTexts = state.headings
-          .filter(
-            (heading) => headingIds.includes(heading.id) && heading.textContent,
-          )
+          .filter((heading) => headingIds.includes(heading.id) && heading.textContent)
           .map((heading) => heading.textContent!.trim())
 
         if (activeTexts.length > 0) {
@@ -257,18 +225,14 @@ const { headings } = Astro.props
     static scrollToActive(activeHeadingId: string) {
       if (!state.listElement) return
 
-      const activeItem = state.listElement.querySelector(
-        `[data-heading-id="${activeHeadingId}"]`,
-      )
+      const activeItem = state.listElement.querySelector(`[data-heading-id="${activeHeadingId}"]`)
       if (!activeItem) return
 
       const scrollContainer = state.scrollArea
       if (!scrollContainer) return
 
-      const { top: containerTop, height: containerHeight } =
-        scrollContainer.getBoundingClientRect()
-      const { top: itemTop, height: itemHeight } =
-        activeItem.getBoundingClientRect()
+      const { top: containerTop, height: containerHeight } = scrollContainer.getBoundingClientRect()
+      const { top: itemTop, height: itemHeight } = activeItem.getBoundingClientRect()
 
       const currentItemTop = itemTop - containerTop + scrollContainer.scrollTop
       const targetScroll = Math.max(
@@ -294,11 +258,7 @@ const { headings } = Astro.props
       })
 
       if (state.scrollArea) {
-        state.scrollArea.addEventListener(
-          'scroll',
-          () => TOCHeaderScrollMask.update(),
-          { passive: true },
-        )
+        state.scrollArea.addEventListener('scroll', () => TOCHeaderScrollMask.update(), { passive: true })
       }
 
       if (state.detailsElement) {
@@ -315,17 +275,10 @@ const { headings } = Astro.props
     static update() {
       if (!state.progressCircle) return
 
-      const scrollableDistance =
-        document.documentElement.scrollHeight - window.innerHeight
-      const scrollProgress =
-        scrollableDistance > 0
-          ? Math.min(Math.max(window.scrollY / scrollableDistance, 0), 1)
-          : 0
+      const scrollableDistance = document.documentElement.scrollHeight - window.innerHeight
+      const scrollProgress = scrollableDistance > 0 ? Math.min(Math.max(window.scrollY / scrollableDistance, 0), 1) : 0
 
-      state.progressCircle.style.strokeDashoffset = (
-        PROGRESS_CIRCLE_CIRCUMFERENCE *
-        (1 - scrollProgress)
-      ).toString()
+      state.progressCircle.style.strokeDashoffset = (PROGRESS_CIRCLE_CIRCUMFERENCE * (1 - scrollProgress)).toString()
     }
   }
 
@@ -392,7 +345,5 @@ const { headings } = Astro.props
     MobileTOCController.cleanup()
     MobileTOCController.init()
   })
-  document.addEventListener('astro:before-swap', () =>
-    MobileTOCController.cleanup(),
-  )
+  document.addEventListener('astro:before-swap', () => MobileTOCController.cleanup())
 </script>
