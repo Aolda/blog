@@ -1,0 +1,310 @@
+---
+title: '아올다 블로그 작성 가이드'
+description: '이 블로그에서 사용할 수 있는 모든 컴포넌트와 기능을 소개하는 예제 포스트입니다.'
+date: 2026-01-01
+tags: ['mdx', 'astro', '가이드']
+image: './banner.png'
+authors: ['aolda']
+---
+
+import Callout from '@/components/Callout.astro'
+import { Icon } from 'astro-icon/components'
+
+이 포스트는 블로그 작성 시 사용할 수 있는 모든 기능과 컴포넌트를 정리한 가이드입니다.
+
+## 기본 마크다운 문법
+
+### 텍스트 서식
+
+**굵은 글씨**, _기울임 글씨_, ~~취소선~~, 그리고 `인라인 코드`를 사용할 수 있습니다.
+
+> 인용문은 이렇게 작성합니다.
+>
+> 여러 줄로도 사용 가능합니다.
+
+### 목록
+
+1. 첫 번째 항목
+2. 두 번째 항목
+3. 세 번째 항목
+
+- 순서 없는 목록 A
+- 순서 없는 목록 B
+  - 중첩 목록
+
+### 표
+
+| 기능     | 설명               | 지원 여부 |
+| -------- | ------------------ | --------- |
+| 마크다운 | 기본 마크다운 문법 | 지원      |
+| MDX      | JSX 컴포넌트 사용  | 지원      |
+| KaTeX    | 수식 렌더링        | 지원      |
+
+### 링크와 이미지
+
+[외부 링크 예시](https://astro.build)로 이동할 수 있으며, 이미지도 삽입 가능합니다.
+
+### 약어
+
+<abbr title="Today I Learned">TIL</abbr>처럼 약어에 마우스를 올리면 설명을 볼 수 있습니다.
+
+### 키보드 컴포넌트
+
+<kbd>Ctrl</kbd> + <kbd>C</kbd>로 복사, <kbd>Ctrl</kbd> + <kbd>V</kbd>로 붙여넣기와 같이 키보드 컴포넌트를 사용할 수
+있습니다.
+
+| 동작     | Windows/Linux                  | Mac                           |
+| -------- | ------------------------------ | ----------------------------- |
+| 복사     | <kbd>Ctrl</kbd> + <kbd>C</kbd> | <kbd>Cmd</kbd> + <kbd>C</kbd> |
+| 붙여넣기 | <kbd>Ctrl</kbd> + <kbd>V</kbd> | <kbd>Cmd</kbd> + <kbd>V</kbd> |
+| 실행취소 | <kbd>Ctrl</kbd> + <kbd>Z</kbd> | <kbd>Cmd</kbd> + <kbd>Z</kbd> |
+| 저장     | <kbd>Ctrl</kbd> + <kbd>S</kbd> | <kbd>Cmd</kbd> + <kbd>S</kbd> |
+
+---
+
+## 코드 블록 (Expressive Code)
+
+인라인 문법 강조도 지원됩니다: `console.log("안녕하세요"){:js}`
+
+### 기본 코드 블록
+
+```typescript title="example.ts" showLineNumbers=false
+function greet(name: string): string {
+  return `안녕하세요, ${name}님!`
+}
+
+console.log(greet('아올다'))
+```
+
+### Diff 하이라이트 (줄 단위)
+
+`ins`와 `del` 속성으로 추가/삭제된 줄을 표시할 수 있습니다.
+
+```js title="config.js" ins={3} del={2}
+const config = {
+  theme: 'light',
+  theme: 'dark',
+}
+```
+
+### Diff 하이라이트 (diff 언어)
+
+`diff` 언어와 `lang` 속성을 조합하면 `+`/`-` 접두사로 diff를 표현할 수 있습니다.
+
+```diff lang="js"
+- app.configure("api-key-string");
++ await app.configure({ key: "api-key-string", version: "2.0" });
+
+- app.on('event', callback);
++ app.on('event', { handler: callback, options: { once: true } });
+```
+
+### 줄 하이라이트 및 접기
+
+```python title="algorithm.py" {2-3} collapse={6-10}
+def fibonacci(n):
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+    # 재귀적으로 피보나치 수를 계산합니다
+    # 이 방식은 시간복잡도가 O(2^n)입니다
+    # 메모이제이션을 사용하면 O(n)으로 개선할 수 있습니다
+    # 아래는 단순 재귀 구현입니다
+    # 큰 수에서는 비효율적입니다
+    return fibonacci(n - 1) + fibonacci(n - 2)
+```
+
+### 키워드 하이라이트 및 주석 블록
+
+키워드를 따옴표로 감싸면 해당 단어가 강조되고, `ins="키워드"`, `del="키워드"`로 키워드 단위 diff도 가능합니다. `{"주석":줄범위}` 문법으로 주석 블록을 추가할 수 있습니다.
+
+```ts title="example.ts" showLineNumbers startLineNumber=100 ins={3} del={4} {5} {"주목할 코드":12-16} collapse={18-22} "awesome" ins="added" del="deleted"
+// <- 이 코드블록은 100번째 줄부터 시작합니다!
+
+// 이 줄은 diff 추가로 표시됩니다
+// 이 줄은 diff 삭제로 표시됩니다
+// 이 줄은 하이라이트됩니다
+
+// "added" 키워드는 초록색으로 표시됩니다
+// "deleted" 키워드는 빨간색으로 표시됩니다
+// "awesome" 키워드는 파란색으로 표시됩니다
+
+// 주석을 달고 싶은 코드 위에 빈 줄을 삽입하세요 (겹침 방지)
+
+function demonstrateFeatures() {
+  console.log('Hello world!')
+  return true
+}
+
+// 아래 줄들은 접을 수 있습니다
+interface HiddenConfig {
+  name: string
+  age: number
+  email: string
+}
+```
+
+### 터미널 프레임
+
+```bash title="의존성 설치"
+$ npm install astro
+$ npm run dev
+```
+
+---
+
+## 수식 (KaTeX)
+
+인라인 수식: $E = mc^2$
+
+블록 수식:
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+$$
+
+행렬도 표현 가능합니다:
+
+$$
+\begin{pmatrix}
+a & b \\
+c & d
+\end{pmatrix}
+\begin{pmatrix}
+x \\
+y
+\end{pmatrix}
+=
+\begin{pmatrix}
+ax + by \\
+cx + dy
+\end{pmatrix}
+$$
+
+---
+
+## Callout 컴포넌트
+
+Callout은 세 가지 props를 지원합니다.
+
+| Prop          | 설명                              | 기본값           |
+| ------------- | --------------------------------- | ---------------- |
+| `title`       | Callout의 제목                    | `undefined{:js}` |
+| `variant`     | Callout의 종류                    | `"note"{:js}`    |
+| `defaultOpen` | `<details>{:html}` 기본 열림 여부 | `true{:js}`      |
+
+### 일반 Callout 목록
+
+<div class="[&_td]:align-middle">
+| Variant | 용도 |
+| ------- | --- |
+| <span class="flex items-center gap-2 border-blue-500 dark:bg-blue-950/10 text-blue-700 dark:text-blue-300 px-2 py-1 border-l-4"><Icon name="lucide:info" /> Note</span> | 일반적인 정보나 참고 사항 |
+| <span class="flex items-center gap-2 border-green-500 dark:bg-green-950/10 text-green-700 dark:text-green-300 px-2 py-1 border-l-4"><Icon name="lucide:lightbulb" /> Tip</span> | 유용한 조언이나 단축키 |
+| <span class="flex items-center gap-2 border-amber-500 dark:bg-amber-950/10 text-amber-700 dark:text-amber-300 px-2 py-1 border-l-4"><Icon name="lucide:alert-triangle" /> Warning</span> | 잠재적인 문제나 주의사항 |
+| <span class="flex items-center gap-2 border-red-500 dark:bg-red-950/10 text-red-700 dark:text-red-300 px-2 py-1 border-l-4"><Icon name="lucide:shield-alert" /> Danger</span> | 치명적이거나 위험한 사항 |
+| <span class="flex items-center gap-2 border-purple-500 dark:bg-purple-950/10 text-purple-700 dark:text-purple-300 px-2 py-1 border-l-4"><Icon name="lucide:message-square-warning" /> Important</span> | 독자의 이해에 중요한 사항 |
+</div>
+
+### 학술용 Callout 목록
+
+<div class="[&_td]:align-middle">
+| Variant | 용도 |
+| ------- | --- |
+| <span class="flex items-center gap-2 border-purple-500 dark:bg-purple-950/10 text-purple-700 dark:text-purple-300 px-2 py-1 border-l-4"><Icon name="lucide:book-open" /> Definition</span> | 용어나 개념의 정의 |
+| <span class="flex items-center gap-2 border-teal-500 dark:bg-teal-950/10 text-teal-700 dark:text-teal-300 px-2 py-1 border-l-4"><Icon name="lucide:check-circle" /> Theorem</span> | 증명된 수학적/논리적 명제 |
+| <span class="flex items-center gap-2 border-sky-400 dark:bg-sky-950/10 text-sky-700 dark:text-sky-300 px-2 py-1 border-l-4"><Icon name="lucide:puzzle" /> Lemma</span> | 정리 증명에 사용되는 보조 정리 |
+| <span class="flex items-center gap-2 border-gray-500 dark:bg-gray-950/10 text-gray-700 dark:text-gray-300 px-2 py-1 border-l-4"><Icon name="lucide:check-square" /> Proof</span> | 정리나 보조 정리의 논리적 증명 |
+| <span class="flex items-center gap-2 border-cyan-500 dark:bg-cyan-950/10 text-cyan-700 dark:text-cyan-300 px-2 py-1 border-l-4"><Icon name="lucide:git-branch" /> Corollary</span> | 정리에서 직접 따르는 결과 |
+| <span class="flex items-center gap-2 border-slate-500 dark:bg-slate-950/10 text-slate-700 dark:text-slate-300 px-2 py-1 border-l-4"><Icon name="lucide:file-text" /> Proposition</span> | 정리보다 약한 중요한 명제 |
+| <span class="flex items-center gap-2 border-violet-600 dark:bg-violet-950/10 text-violet-700 dark:text-violet-300 px-2 py-1 border-l-4"><Icon name="lucide:anchor" /> Axiom</span> | 증명 없이 받아들이는 기본 가정 |
+| <span class="flex items-center gap-2 border-pink-500 dark:bg-pink-950/10 text-pink-700 dark:text-pink-300 px-2 py-1 border-l-4"><Icon name="lucide:help-circle" /> Conjecture</span> | 참이라고 믿어지는 미증명 명제 |
+| <span class="flex items-center gap-2 border-slate-400 dark:bg-slate-950/10 text-slate-700 dark:text-slate-300 px-2 py-1 border-l-4"><Icon name="lucide:pen-tool" /> Notation</span> | 수학적 표기법 설명 |
+| <span class="flex items-center gap-2 border-gray-400 dark:bg-gray-950/10 text-gray-700 dark:text-gray-300 px-2 py-1 border-l-4"><Icon name="lucide:message-circle" /> Remark</span> | 추가적인 코멘트나 관찰 |
+| <span class="flex items-center gap-2 border-yellow-500 dark:bg-yellow-950/10 text-yellow-700 dark:text-yellow-300 px-2 py-1 border-l-4"><Icon name="lucide:lightbulb" /> Intuition</span> | 개념의 직관적 이해 |
+| <span class="flex items-center gap-2 border-blue-300 dark:bg-blue-950/10 text-blue-600 dark:text-blue-300 px-2 py-1 border-l-4"><Icon name="lucide:rotate-ccw" /> Recall</span> | 이전에 다룬 내용 상기 |
+| <span class="flex items-center gap-2 border-lime-500 dark:bg-lime-950/10 text-lime-700 dark:text-lime-300 px-2 py-1 border-l-4"><Icon name="lucide:help-circle" /> Explanation</span> | 심층적인 설명이나 해설 |
+| <span class="flex items-center gap-2 border-emerald-500 dark:bg-emerald-950/10 text-emerald-700 dark:text-emerald-300 px-2 py-1 border-l-4"><Icon name="lucide:code" /> Example</span> | 구체적인 예시나 유추 |
+| <span class="flex items-center gap-2 border-indigo-500 dark:bg-indigo-950/10 text-indigo-700 dark:text-indigo-300 px-2 py-1 border-l-4"><Icon name="lucide:dumbbell" /> Exercise</span> | 연습 문제나 과제 |
+| <span class="flex items-center gap-2 border-orange-600 dark:bg-orange-950/10 text-orange-700 dark:text-orange-300 px-2 py-1 border-l-4"><Icon name="lucide:alert-circle" /> Problem</span> | 풀이가 필요한 문제 |
+| <span class="flex items-center gap-2 border-teal-500 dark:bg-teal-950/10 text-teal-700 dark:text-teal-300 px-2 py-1 border-l-4"><Icon name="lucide:check" /> Answer</span> | 간단한 답변 |
+| <span class="flex items-center gap-2 border-emerald-600 dark:bg-emerald-950/10 text-emerald-700 dark:text-emerald-300 px-2 py-1 border-l-4"><Icon name="lucide:check-circle-2" /> Solution</span> | 상세한 풀이 과정 |
+| <span class="flex items-center gap-2 border-sky-500 dark:bg-sky-950/10 text-sky-700 dark:text-sky-300 px-2 py-1 border-l-4"><Icon name="lucide:list" /> Summary</span> | 핵심 내용 요약 |
+</div>
+
+### 일반 Callout 예시
+
+<Callout variant="note" title="참고">
+  일반적인 정보를 전달할 때 사용합니다.
+</Callout>
+
+<Callout variant="tip" title="팁">
+  <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>F</kbd> (Windows/Linux) 또는 <kbd>Cmd</kbd> + <kbd>Option</kbd> + <kbd>F</kbd> (Mac)로 코드를 빠르게 포맷할 수 있습니다.
+
+| 동작      | Windows/Linux                                   | Mac                                               |
+| --------- | ----------------------------------------------- | ------------------------------------------------- |
+| 검색      | <kbd>Ctrl</kbd> + <kbd>F</kbd>                  | <kbd>Cmd</kbd> + <kbd>F</kbd>                     |
+| 바꾸기    | <kbd>Ctrl</kbd> + <kbd>H</kbd>                  | <kbd>Cmd</kbd> + <kbd>H</kbd>                     |
+| 모두 저장 | <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>S</kbd> | <kbd>Cmd</kbd> + <kbd>Option</kbd> + <kbd>S</kbd> |
+
+</Callout>
+
+<Callout variant="warning" title="주의">
+  이 API는 Internet Explorer에서 **지원되지 않으며**, 구형 브라우저에서 제한적으로 동작합니다.
+
+```js title="polyfill.js"
+if (!Object.fromEntries) {
+  Object.fromEntries = function (entries) {
+    const obj = {}
+    for (const [key, value] of entries) {
+      obj[key] = value
+    }
+    return obj
+  }
+}
+```
+
+</Callout>
+
+<Callout variant="danger" title="위험">
+이 명령어를 실행하면 현재 디렉토리의 모든 파일이 **영구적으로 삭제**됩니다.
+
+```bash title="danger.sh"
+rm -rf ./*
+```
+
+이 작업은 되돌릴 수 없습니다.
+</Callout>
+
+<Callout variant="important" title="API 변경사항">
+v2.0에서 중요한 API 변경이 있습니다.
+
+1. `configure(){:js}` 메서드가 Promise를 반환합니다
+2. 인증에 API 키 객체가 필요합니다
+
+```diff lang="js"
+- app.configure("api-key-string");
++ await app.configure({ key: "api-key-string", version: "2.0" });
+
+- app.on('event', callback);
++ app.on('event', { handler: callback, options: { once: true } });
+```
+</Callout>
+
+### 중첩 Callout 예시
+
+<Callout variant="exercise" title="곱의 미분법">
+$f(x) = x^3 \sin(x)$의 도함수를 구하세요.
+
+<Callout variant="answer" defaultOpen={false}>
+$$
+\frac{d}{dx}[x^3 \sin(x)] = 3x^2 \sin(x) + x^3 \cos(x)
+$$
+</Callout>
+</Callout>
+
+### 접힌 Callout
+
+<Callout variant="summary" title="이 포스트의 요약" defaultOpen={false}>
+이 포스트에서는 마크다운 서식, `<kbd>` 키보드 입력, Expressive Code 코드 블록(diff, 키워드 하이라이트, 주석 블록, 캡션 등), KaTeX 수식, 그리고 전체 Callout 컴포넌트 목록을 다루었습니다.
+</Callout>
