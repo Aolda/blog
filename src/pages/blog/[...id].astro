@@ -3,6 +3,7 @@ import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import Link from '@/components/Link.astro'
 import PostHead from '@/components/PostHead.astro'
 import PostNavigation from '@/components/PostNavigation.astro'
+import PostViewCount from '@/components/PostViewCount'
 import TOCHeader from '@/components/TOCHeader.astro'
 import TOCSidebar from '@/components/TOCSidebar.astro'
 import { badgeVariants } from '@/components/ui/badge'
@@ -103,6 +104,12 @@ const postReadingTime = await getPostReadingTime(currentPostId)
             class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0"
           >
             <span>{postReadingTime}</span>
+          </div>
+
+          <div
+            class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0"
+          >
+            <PostViewCount client:load postId={post.data.postId} />
           </div>
         </div>
         <div class="flex flex-wrap justify-center gap-2">
