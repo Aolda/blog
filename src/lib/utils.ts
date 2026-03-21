@@ -1,3 +1,4 @@
+import type { ImageMetadata } from 'astro'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -34,4 +35,19 @@ export function getHeadingMargin(depth: number): string {
     6: 'ml-16',
   }
   return margins[depth] || ''
+}
+
+export function getImageSrc(image?: ImageMetadata | string | null): string | undefined {
+  if (!image) return undefined
+  return typeof image === 'string' ? image : image.src
+}
+
+export function getAbsoluteImageUrl(
+  image: ImageMetadata | string | null | undefined,
+  site: URL | string,
+): string | undefined {
+  const src = getImageSrc(image)
+  if (!src) return undefined
+  if (/^https?:\/\//.test(src)) return src
+  return new URL(src, site).toString()
 }

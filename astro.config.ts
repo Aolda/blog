@@ -20,9 +20,31 @@ import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers'
 import tailwindcss from '@tailwindcss/vite'
 
 const __dirname = import.meta.dirname
+const allowedRemoteImageDomains = parseDomains(process.env.IMAGE_ALLOWED_DOMAINS)
+
+function parseDomains(value?: string): string[] {
+  if (!value) return []
+
+  return [
+    ...new Set(
+      value
+        .split(',')
+        .map((entry) => entry.trim())
+        .filter((entry) => entry !== '')
+        .map((entry) => {
+          try {
+            return new URL(entry).hostname || entry
+          } catch {
+            return entry
+          }
+        }),
+    ),
+  ]
+}
 
 export default defineConfig({
   site: 'https://blog.aoldacloud.com',
+  image: { domains: allowedRemoteImageDomains },
   integrations: [
     expressiveCode({
       themes: ['github-light', 'github-dark'],
@@ -33,10 +55,9 @@ export default defineConfig({
         wrap: true,
         collapseStyle: 'collapsible-auto',
         overridesByLang: {
-          'ansi,bat,bash,batch,cmd,console,powershell,ps,ps1,psd1,psm1,sh,shell,shellscript,shellsession,text,zsh':
-            {
-              showLineNumbers: false,
-            },
+          'ansi,bat,bash,batch,cmd,console,powershell,ps,ps1,psd1,psm1,sh,shell,shellscript,shellsession,text,zsh': {
+            showLineNumbers: false,
+          },
         },
       },
       styleOverrides: {
@@ -46,16 +67,14 @@ export default defineConfig({
         codeBackground: 'color-mix(in oklab, var(--muted) 25%, transparent)',
         frames: {
           editorActiveTabForeground: 'var(--muted-foreground)',
-          editorActiveTabBackground:
-            'color-mix(in oklab, var(--muted) 25%, transparent)',
+          editorActiveTabBackground: 'color-mix(in oklab, var(--muted) 25%, transparent)',
           editorActiveTabIndicatorBottomColor: 'transparent',
           editorActiveTabIndicatorTopColor: 'transparent',
           editorTabBorderRadius: '0',
           editorTabBarBackground: 'transparent',
           editorTabBarBorderBottomColor: 'transparent',
           frameBoxShadowCssValue: 'none',
-          terminalBackground:
-            'color-mix(in oklab, var(--muted) 25%, transparent)',
+          terminalBackground: 'color-mix(in oklab, var(--muted) 25%, transparent)',
           terminalTitlebarBackground: 'transparent',
           terminalTitlebarBorderBottomColor: 'transparent',
           terminalTitlebarForeground: 'var(--muted-foreground)',

@@ -1,5 +1,6 @@
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import Image from '@/components/Image.astro'
 import Link from '@/components/Link.astro'
 import PostHead from '@/components/PostHead.astro'
 import PostNavigation from '@/components/PostNavigation.astro'
@@ -12,7 +13,6 @@ import Layout from '@/layouts/Layout.astro'
 import { getAdjacentPosts, getAllPosts, getPostReadingTime, parseAuthors } from '@/lib/data-utils'
 import { formatDate } from '@/lib/utils'
 import { Icon } from 'astro-icon/components'
-import { Image } from 'astro:assets'
 import { render } from 'astro:content'
 
 export async function getStaticPaths() {
