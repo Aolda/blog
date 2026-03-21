@@ -11,7 +11,8 @@ interface Props {
 }
 
 const { author } = Astro.props
-const { name, avatar, bio } = author.data
+const { name, bio } = author.data
+const avatar = author.data.avatar ?? '/static/fallback.png'
 const currentPath = Astro.url.pathname
 const isAuthorPage = currentPath === `/authors/${author.id}`
 
