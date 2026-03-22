@@ -13,24 +13,12 @@ interface Props {
 const { project } = Astro.props
 ---
 
-<div
-  class="hover:bg-muted/50 rounded-xl border p-4 transition-colors duration-300 ease-in-out"
->
-  <Link
-    href={project.data.link}
-    class="flex flex-col gap-4 sm:flex-row"
-    external
-  >
+<div class="hover:bg-muted/50 rounded-xl border p-4 transition-colors duration-300 ease-in-out">
+  <Link href={project.data.link} class="flex flex-col gap-4 sm:flex-row" external>
     {
       project.data.image && (
         <div class="w-full sm:max-w-3xs sm:shrink-0">
-          <Image
-            src={project.data.image}
-            alt={project.data.name}
-            width={1200}
-            height={630}
-            class="object-cover"
-          />
+          <Image src={project.data.image} alt={project.data.name} class="object-cover" />
         </div>
       )
     }
@@ -48,9 +36,7 @@ const { project } = Astro.props
               <Icon name="lucide:calendar" class="size-3" />
               <span>
                 {formatDate(project.data.startDate)}
-                {project.data.endDate
-                  ? ` → ${formatDate(project.data.endDate)}`
-                  : ' → 진행중'}
+                {project.data.endDate ? ` → ${formatDate(project.data.endDate)}` : ' → 진행중'}
               </span>
             </span>
           </p>

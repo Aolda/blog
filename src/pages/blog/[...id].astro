@@ -54,17 +54,7 @@ const postReadingTime = await getPostReadingTime(currentPostId)
       />
     </div>
 
-    {
-      post.data.image && (
-        <Image
-          src={post.data.image}
-          alt={post.data.title}
-          width={1200}
-          height={630}
-          class="col-start-2 w-full object-cover"
-        />
-      )
-    }
+    {post.data.image && <Image src={post.data.image} alt={post.data.title} class="col-start-2 w-full object-cover" />}
 
     <section class="col-start-2 flex flex-col gap-y-6 text-center">
       <div class="flex flex-col">
