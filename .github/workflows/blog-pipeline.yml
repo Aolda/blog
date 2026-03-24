@@ -1,0 +1,142 @@
+name: Aolda Blog Pipeline
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  repository_dispatch:
+    types:
+      - content-updated
+  workflow_dispatch:
+    inputs:
+      content_ref:
+        description: Content git ref to build and publish
+        required: false
+        type: string
+        default: main
+
+env:
+  CONTENT_REPOSITORY: Aolda/blog-content
+  CONTENT_DEFAULT_REF: main
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    outputs:
+      content_repo: ${{ steps.resolve-content.outputs.repo }}
+      content_ref: ${{ steps.resolve-content.outputs.ref }}
+      content_sha: ${{ steps.resolve-content.outputs.sha }}
+
+    steps:
+      - name: Resolve content target
+        id: resolve-content
+        shell: bash
+        run: |
+          repo="${CONTENT_REPOSITORY}"
+          ref="${CONTENT_DEFAULT_REF}"
+          sha=""
+
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            repo="${{ github.event.client_payload.content_repo }}"
+            ref="${{ github.event.client_payload.content_sha }}"
+            sha="${{ github.event.client_payload.content_sha }}"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.content_ref }}" ]; then
+            ref="${{ inputs.content_ref }}"
+          fi
+
+          echo "repo=$repo" >> "$GITHUB_OUTPUT"
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout app repository
+        uses: actions/checkout@v6
+
+      - name: Remove placeholder content directory
+        run: rm -rf src/content
+
+      - name: Checkout content repository
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ steps.resolve-content.outputs.repo }}
+          ref: ${{ steps.resolve-content.outputs.ref }}
+          path: src/content
+          token: ${{ secrets.CONTENT_REPO_READ_TOKEN || github.token }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: blog-dist
+          path: dist
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Write build summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          echo "### Build metadata" >> "$GITHUB_STEP_SUMMARY"
+          echo "- event: ${{ github.event_name }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- content repo: ${{ steps.resolve-content.outputs.repo }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- content ref: ${{ steps.resolve-content.outputs.ref }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- content sha: ${{ steps.resolve-content.outputs.sha || 'n/a' }}" >> "$GITHUB_STEP_SUMMARY"
+
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: build
+    if: ${{ github.event_name != 'pull_request' }}
+    concurrency:
+      group: blog-production-publish
+      cancel-in-progress: true
+    permissions:
+      contents: read
+      deployments: write
+    environment:
+      name: production
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: blog-dist
+          path: dist
+
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: >-
+            pages deploy dist
+            --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME }}
+            --branch=main
+
+      - name: Write publish summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          echo "### Publish metadata" >> "$GITHUB_STEP_SUMMARY"
+          echo "- project: ${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- content ref: ${{ needs.build.outputs.content_ref }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- content sha: ${{ needs.build.outputs.content_sha || 'n/a' }}" >> "$GITHUB_STEP_SUMMARY"
